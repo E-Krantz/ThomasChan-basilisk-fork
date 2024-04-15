@@ -1,7 +1,7 @@
 /*
  ISC License
 
- Copyright (c) 2021, Autonomous Vehicle Systems Lab, University of Colorado Boulder
+ Copyright (c) 2024, Autonomous Vehicle Systems Lab, University of Colorado at Boulder
 
  Permission to use, copy, modify, and/or distribute this software for any
  purpose with or without fee is hereby granted, provided that the above
@@ -15,33 +15,27 @@
  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-*/
-
-%module MtbEffector
+ */
+%module prescribedLinearTranslation
 %{
-    #include "MtbEffector.h"
+   #include "prescribedLinearTranslation.h"
 %}
 
 %pythoncode %{
-    from Basilisk.architecture.swig_common_model import *
+from Basilisk.architecture.swig_common_model import *
 %}
 %include "std_string.i"
 %include "swig_conly_data.i"
+%include "swig_eigen.i"
 
 %include "sys_model.i"
-%include "simulation/dynamics/_GeneralModuleFiles/stateData.h"
-%include "simulation/dynamics/_GeneralModuleFiles/dynamicEffector.h"
-%include "simulation/dynamics/_GeneralModuleFiles/dynParamManager.h"
-%include "MtbEffector.h"
+%include "prescribedLinearTranslation.h"
 
-%include "architecture/msgPayloadDefC/MTBCmdMsgPayload.h"
-struct MTBCmdMsg_C;
-%include "architecture/msgPayloadDefC/MagneticFieldMsgPayload.h"
-struct MagneticFieldMsg_C;
-%include "architecture/msgPayloadDefC/MTBArrayConfigMsgPayload.h"
-struct MTBArrayConfigMsg_C;
-%include "architecture/msgPayloadDefC/MTBMsgPayload.h"
-struct MTBMsg_C;
+%include "architecture/msgPayloadDefC/PrescribedTranslationMsgPayload.h"
+struct PrescribedTranslationMsg_C;
+
+%include "architecture/msgPayloadDefC/LinearTranslationRigidBodyMsgPayload.h"
+struct LinearTranslationRigidBodyMsg_C;
 
 %pythoncode %{
 import sys

@@ -208,6 +208,7 @@ Complex Spacecraft Dynamics Simulations
    Hinged Panel Deployment <scenarioDeployingPanel>
    MSM Simulation of Charged Spacecraft <scenarioTwoChargedSC>
    Spacecraft with 1- or 2-DOF Panel using single effector <scenarioSpinningBodiesTwoDOF>
+   Prescribed Motion Rotational Solar Array Deployment <scenarioDeployingSolarArrays>
 
 Mission Simulations
 ---------------------------------------
@@ -330,7 +331,6 @@ Advanced Simulation Options
    Using a Variable Time Step Integrator <scenarioVariableTimeStepIntegrators>
    Comparison of different integrators <scenarioIntegratorsComparison>
    Using a Python BSK Module Inherited from SysModel Class <scenarioAttitudePointingPy>
-   Using a Python BSK Module (depreciated)  <scenarioAttitudePointingPyDEPRECATED>
    Changing the bskLog Verbosity from Python <scenarioBskLog>
 
 Multi-Threading Basilisk Simulations

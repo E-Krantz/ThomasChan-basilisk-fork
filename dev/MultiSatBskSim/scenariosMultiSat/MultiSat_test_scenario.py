@@ -164,18 +164,18 @@ import BSK_MultiSatPlotting as plt
 
 # class shall Inherits BSK_MultiSatMasters.BSKSim & .BSKScenario
 class MultiSat_test_scenario(BSKSim, BSKScenario): 
-    def __init__(self, numberSpacecraft, targetOE, initConfigs, simRate, dataSamplingTimeSec, relativeNavigation):
+    def __init__(self, targetOE, initConfigs, simRate, dataSamplingTimeSec, relativeNavigation):
         # This below is initializing the scenario itself using the class structure defined in 
         super(MultiSat_test_scenario, self).__init__(
-            numberSpacecraft, targetOE, initConfigs, relativeNavigation=relativeNavigation, fswRate=simRate, dynRate=simRate, envRate=simRate, relNavRate=simRate)
+            targetOE, initConfigs, relativeNavigation=relativeNavigation, fswRate=simRate, dynRate=simRate, envRate=simRate, relNavRate=simRate)
         self.name = 'MultiSat_test_scenario'
         # self.initConfigPath = initConfigPath
         
         # Connect the environment, dynamics and FSW classes. It is crucial that these are set in the order specified, as
         # some connects made imply that some modules already exist
         self.set_EnvModel(BSK_EnvironmentEarth)
-        self.set_DynModel([BSK_MultiSatDynamics] * numberSpacecraft)
-        self.set_FswModel([BSK_MultiSatFsw] * numberSpacecraft)
+        self.set_DynModel([BSK_MultiSatDynamics] * self.numberSpacecraft)
+        self.set_FswModel([BSK_MultiSatFsw] * self.numberSpacecraft)
 
         # declare empty class variables
         self.samplingTime = []
@@ -479,8 +479,9 @@ class MultiSat_test_scenario(BSKSim, BSKScenario):
         # plt.plot_rw_speeds(timeLineSetMin, dataOmegaRW, DynModels[spacecraftIndex].numRW, 8)        
         plt.plot_orbits(r_BN_N, self.numberSpacecraft, 9)
         
-        # Added animated plot to relative orbits, keep `ani` there!
-        _ = plt.plot_relative_orbits(dr, len(dr), 10)
+        # Added animated plot to relative orbits, keep `_` there!
+        # _ = plt.plot_relative_orbits(dr, len(dr), 10)
+        
         # print(dr, len(dr))
         # print(range(0, self.numberSpacecraft - 1))
         for scIndex in range(0, self.numberSpacecraft):
@@ -525,10 +526,13 @@ def runScenario(scenario, relativeNavigation, simulationTimeHours):
     # scenario.FSWModels[1].modeRequest = "inertialPointing" # We need to turn on all S/C tasks!
     # scenario.FSWModels[2].modeRequest = "inertialPointing" # We need to turn on all S/C tasks!    
     
-    scenario.FSWModels[0].modeRequest = "hillPointing"
-    scenario.FSWModels[1].modeRequest = "hillPointing" 
-    scenario.FSWModels[2].modeRequest = "hillPointing"
+    # scenario.FSWModels[0].modeRequest = "hillPointing"
+    # scenario.FSWModels[1].modeRequest = "hillPointing" 
+    # scenario.FSWModels[2].modeRequest = "hillPointing"
      
+    for i in range(scenario.numberSpacecraft): # Indexxing range starts from 0.
+        scenario.FSWModels[i].modeRequest = "hillPointing"
+    
     # scenario.FSWModels[1].modeRequest = "sunPointing"
     # scenario.FSWModels[2].modeRequest = "locationPointing"
 
@@ -550,15 +554,17 @@ def runScenario(scenario, relativeNavigation, simulationTimeHours):
     
     # Reconfigure FSW attitude modes
     # scenario.FSWModels[0].modeRequest = "inertialPointing"
-    scenario.FSWModels[1].modeRequest = "startTransController"
-    scenario.FSWModels[2].modeRequest = "startTransController"
+    # scenario.FSWModels[1].modeRequest = "startTransController"
+    # scenario.FSWModels[2].modeRequest = "startTransController" 
+    # scenario.FSWModels[3].modeRequest = "startTransController" 
+    for i in range(1, scenario.numberSpacecraft): # Ignore the index 0 target: 
+        scenario.FSWModels[i].modeRequest = "startTransController"
     
     # Execute the simulation
     scenario.ConfigureStopTime(simulationTime)
     scenario.ExecuteSimulation()
 
-
-def run(showPlots, numberSpacecraft, relativeNavigation,  
+def run(showPlots, relativeNavigation = False,  
         initConfigPath = "dev/MultiSatBskSim/scenariosMultiSat/simInitConfig/init_config.json",
         simulationTimeHours = 1.,
         simRate = 0.1,
@@ -569,7 +575,7 @@ def run(showPlots, numberSpacecraft, relativeNavigation,
 
     Args:
         showPlots (bool): Determines if the script should display plots
-        numberSpacecraft (int): Number of spacecraft in the simulation
+        (REMOVED) numberSpacecraft (int): Number of spacecraft in the simulation
         relativeNavigation (bool): Determines if the formation's chief is the barycenter or the zeroth index spacecraft
 
     """
@@ -585,19 +591,18 @@ def run(showPlots, numberSpacecraft, relativeNavigation,
         simulationTimeHours = float(sys.argv[2])
     
     targetOE, initConfigs = scConfig.loadInitConfig(initConfigPath)
-    # TODO 20240614: remove "numberSpacecraft" and pass "target_dr_hill" to FSW
     # TheScenario = MultiSat_test_scenario(numberSpacecraft, initConfigPath, relativeNavigation)
-    TheScenario = MultiSat_test_scenario(numberSpacecraft, targetOE, initConfigs, simRate, dataSamplingTimeSec, relativeNavigation)
+    TheScenario = MultiSat_test_scenario(targetOE, initConfigs, simRate, dataSamplingTimeSec, relativeNavigation)
     runScenario(TheScenario, relativeNavigation, simulationTimeHours)
     # figureList = TheScenario.pull_outputs(showPlots, relativeNavigation, 0)
     figureList = TheScenario.pull_outputs(showPlots, relativeNavigation,2)
-
+    
     return figureList
 
 
 if __name__ == "__main__":
     run(showPlots=True,
-        numberSpacecraft=3,
+        # numberSpacecraft=3,
         relativeNavigation=False,
         initConfigPath = "dev/MultiSatBskSim/scenariosMultiSat/simInitConfig/init_config.json",
         simulationTimeHours = 0.5,
